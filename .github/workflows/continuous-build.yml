@@ -48,8 +48,8 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: |
-            rockylinux/rockylinux:${{ matrix.version.major }}
-            quay.io/rockylinux/rockylinux:${{ matrix.version.major }}
+            lumarel/rockylinux:${{ matrix.version.major }}
+            quay.io/lumarel/rockylinux:${{ matrix.version.major }}
           build-args: |
             Imageversion: ${{ matrix.version.full }}
 
@@ -61,9 +61,9 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: |
-            rockylinux/rockylinux:${{ matrix.version.major }}
-            rockylinux/rockylinux:latest
-            quay.io/rockylinux/rockylinux:${{ matrix.version.major }}
-            quay.io/rockylinux/rockylinux:latest
+            lumarel/rockylinux:${{ matrix.version.major }}
+            lumarel/rockylinux:latest
+            quay.io/lumrel/rockylinux:${{ matrix.version.major }}
+            quay.io/lumarel/rockylinux:latest
           build-args: |
             Imageversion: ${{ matrix.version.full }}
