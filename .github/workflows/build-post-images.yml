@@ -21,7 +21,7 @@ jobs:
           - 9
         type:
           - micro
-          - init
+          #- init
     runs-on: ubuntu-latest
     name: Build and push images
     steps:
