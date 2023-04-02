@@ -1,0 +1,85 @@
+---
+name: Build all images
+
+on:
+  workflow_dispatch:
+    inputs:
+      debug:
+        description: "run build-image with --debug"
+        default: false
+        type: boolean
+  # push:
+  #   branches: [ $default-branch, imagefactory ]
+  # pull_request:
+  #   branches: [ $default-branch ]
+  # schedule:
+  #   - cron: "0 0 * * 0"
+
+jobs:
+  build:
+    strategy:
+      max-parallel: 1
+      matrix: 
+        architecture:
+          - x64
+          - arm64
+          - s390x
+          - ppc64le
+        version:
+          - major: 8
+            minor: 6
+          - major: 9
+            minor: 0
+        type:
+          - name: Container
+            variant: Base
+          - name: Container
+            variant: Minimal
+          - name: Container
+            variant: UBI
+          - name: GenericCloud
+            variant: Base
+          - name: GenericCloud
+            variant: LVM
+          - name: EC2
+            variant: Base
+          - name: EC2
+            variant: LVM
+          - name: Azure
+            variant: Base
+          - name: Azure
+            variant: LVM
+          - name: OCP
+        exclude:
+          - architecture: s390x
+            version:
+              major: 8
+          - architecture: ppc64le
+            version:
+              major: 8
+          - architecture: s390x
+            name: EC2
+          - architecture: ppc64le
+            name: EC2
+          - architecture: s390x
+            name: OCP
+          - architecture: ppc64le
+            name: OCP
+          - architecture: s390x
+            name: Azure
+          - architecture: ppc64le
+            name: Azure
+    runs-on: 
+      - self-hosted
+      - ${{ matrix.architecture }}
+    steps:
+
+      - name: Build image using empanadas
+        env:
+          IMAGE: ghcr.io/rocky-linux/empanadas-imagefactory:latest
+        run: |
+          export VARIANT_ARGS="$(test -z '${{ matrix.type.variant }}' && echo '' || echo '--variant ${{ matrix.type.variant }}')"
+          export CMD="build-image --version ${{ matrix.version.major }} --type ${{ matrix.type.name }} ${VARIANT_ARGS}"
+          sudo podman run --rm --privileged --security-opt label=disable --device fuse \
+            -v /var/run/libvirt:/var/run/libvirt:rw -v /var/lib/imagefactory:/var/lib/imagefactory:rw \
+            -e LIBVIRT_DEFAULT_URI $IMAGE $CMD
