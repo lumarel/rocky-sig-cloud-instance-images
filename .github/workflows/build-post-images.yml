@@ -17,8 +17,10 @@ jobs:
     strategy:
       matrix:
         version:
-          - 8
-          - 9
+          - major: 8
+            arch: 'amd64, arm64'
+          - major: 9
+            arch: 'amd64, arm64, ppc64le, s390x'
         type:
           - micro
           - init
@@ -43,15 +45,15 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         id: build-image
         with:
-          archs: amd64, arm64
+          archs: ${{ matrix.version.arch }}
           build-args: |
-            ImageVersion=${{ matrix.version }}
+            ImageVersion=${{ matrix.version.major }}
           containerfiles: |
             ./Containerfile-${{ matrix.type }}
           labels: |
             name=rockylinux
-            version=${{ matrix.version }}-ubi-${{ matrix.type }}
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_ACCOUNT }}/rockylinux:${{ matrix.version }}-ubi-${{ matrix.type }}
+            version=${{ matrix.version.major }}-ubi-${{ matrix.type }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_ACCOUNT }}/rockylinux:${{ matrix.version.major }}-ubi-${{ matrix.type }}
 
       - name: Push image
         uses: redhat-actions/push-to-registry@v2
