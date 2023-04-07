@@ -25,10 +25,10 @@ jobs:
           - init
         registry:
           - domain: docker.io
-            account: rockylinux
+            account: lumarel
             secret: DOCKER
           - domain: quay.io
-            account: rockylinux
+            account: lumarel
             secret: QUAY
         exclude:
           - version: 8
