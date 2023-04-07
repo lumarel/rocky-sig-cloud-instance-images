@@ -22,10 +22,10 @@ jobs:
           - init
         registry:
           - domain: docker.io
-            account: rockylinux
+            account: lumarel
             secret: DOCKER
           - domain: quay.io
-            account: rockylinux
+            account: lumarel
             secret: QUAY
     runs-on: ubuntu-latest
     name: Build and push images
