@@ -1,0 +1,62 @@
+---
+name: Build images that rely on others
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 0"
+
+env:
+  IMAGE_REGISTRY: quay.io
+  IMAGE_ACCOUNT: lumarel
+
+jobs:
+  run_image_builds:
+    strategy:
+      matrix:
+        version:
+          - major: 8
+            arch: 'amd64, arm64'
+          - major: 9
+            arch: 'amd64, arm64, ppc64le, s390x'
+        type:
+          - micro
+          - init
+    runs-on: ubuntu-latest
+    name: Build and push images
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install qemu dependency
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-user-static
+
+      - name: Setup Registry login
+        uses: redhat-actions/podman-login@v1
+        with:
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+          registry: ${{ env.IMAGE_REGISTRY }}
+      
+      - name: Build image
+        uses: redhat-actions/buildah-build@v2
+        id: build-image
+        with:
+          archs: ${{ matrix.version.arch }}
+          build-args: |
+            ImageVersion=${{ matrix.version.major }}
+          containerfiles: |
+            ./Containerfile-${{ matrix.type }}
+          labels: |
+            name=rockylinux
+            version=${{ matrix.version.major }}-ubi-${{ matrix.type }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_ACCOUNT }}/rockylinux:${{ matrix.version.major }}-ubi-${{ matrix.type }}
+
+      - name: Push image
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-image.outputs.image }}
+          tags: ${{ steps.build-image.outputs.tags }}
