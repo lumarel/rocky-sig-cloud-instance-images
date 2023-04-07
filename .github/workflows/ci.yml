@@ -15,21 +15,13 @@ jobs:
     strategy:
       matrix:
         version:
-          - 8
-          - 9
-        arch:
-          - amd64
-          - arm64
-          - ppc64le
-          - s390x
+          - major: 8
+            arch: 'amd64, arm64'
+          - major: 9
+            arch: 'amd64, arm64, ppc64le, s390x'
         type:
           - micro
           - init
-        exclude:
-          - version: 8
-            arch: ppc64le
-          - version: 8
-            arch: s390x
     runs-on: ubuntu-latest
     name: Test the image build
     steps:
@@ -44,12 +36,12 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         id: build-image
         with:
-          archs: ${{ matrix.arch }}
+          archs: ${{ matrix.version.arch }}
           build-args: |
-            ImageVersion=${{ matrix.version }}
+            ImageVersion=${{ matrix.version.major }}
           containerfiles: |
             ./Containerfile-${{ matrix.type }}
           labels: |
             name=rockylinux
-            version=${{ matrix.version }}-ubi-${{ matrix.type }}
-          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_ACCOUNT }}/rockylinux:${{ matrix.version }}-ubi-${{ matrix.type }}
+            version=${{ matrix.version.major }}-ubi-${{ matrix.type }}
+          tags: ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_ACCOUNT }}/rockylinux:${{ matrix.version.major }}-ubi-${{ matrix.type }}
