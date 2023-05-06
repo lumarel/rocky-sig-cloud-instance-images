@@ -56,7 +56,7 @@ jobs:
           labels: |
             name=rockylinux
             version=${{ matrix.version.major }}-ubi-${{ matrix.type }}
-          oci: true
+          oci: false
           tags: ${{ matrix.registry.domain }}/${{ matrix.registry.account }}/rockylinux:${{ matrix.version.major }}-ubi-${{ matrix.type }}
 
       - name: Push image
