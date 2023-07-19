@@ -25,7 +25,7 @@ if [[ $major -ge 9 ]]; then
 fi
 
 case $type in
-UBI | Minimal)
+CCI | Minimal)
 	suffix="-${type,,}"
 	;;
 *)

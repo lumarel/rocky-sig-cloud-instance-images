@@ -16,7 +16,7 @@ if [[ -z "$version" || ! "$version" =~ [0-9]+.[0-9]+ ]]; then
 fi
 
 case "$type" in
-  Base|Minimal|UBI) ;;
+  Base|Minimal|CCI) ;;
   *) 
     usage "Invalid type"
     exit 1

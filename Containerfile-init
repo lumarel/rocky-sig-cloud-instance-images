@@ -1,16 +1,17 @@
 ARG ImageVersion
 
-FROM rockylinux/rockylinux:$ImageVersion-ubi
-LABEL summary="Rocky Linux UBI init image" \
-      description="This image is designed to run an init system as PID 1 for running multi-services inside a container." \
+FROM rockylinux/rockylinux:$ImageVersion-cci
+LABEL org.opencontainers.image.title="Rocky Linux common init image" \
+      org.opencontainers.image.description="This image is designed to run an init system as PID 1 for running multi-services inside a container." \
       usage="Do not use directly. Use as a base image for daemons. Install chosen packages and 'systemctl enable' them." \
-      maintainer="Magauer Lukas <lukas@magauer.eu>"
+      org.opencontainers.image.source="https://github.com/rocky-linux/sig-cloud-instance-images" \
+      org.opencontainers.image.authors="Rocky Linux SIG Cloud Team,Magauer Lukas <lukas@magauer.eu>"
 
 CMD ["/sbin/init"]
 
 STOPSIGNAL SIGRTMIN+3
 
-#TODO: this is a workaround until the ubi image has systemd in it again
+#TODO: this is a workaround until the common image has systemd in it again
 RUN dnf -y install systemd
 
 #mask systemd-machine-id-commit.service - partial fix for https://bugzilla.redhat.com/show_bug.cgi?id=1472439

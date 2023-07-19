@@ -20,7 +20,7 @@ jobs:
         variant:
           - Base
           - Minimal
-          - UBI
+          - CCI
     runs-on: 
       - self-hosted
       - ${{ matrix.architecture }}
